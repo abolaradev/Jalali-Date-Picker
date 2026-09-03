@@ -100,7 +100,7 @@ class Asset
 
             function package_asset(string $path)
             {
-                $asset = asset("vendor/skeleton/$path");
+                $asset = asset("vendor/livewire-jalali-date-picker/$path");
                 $path = file_exists($asset) ? $asset
                                             : url("assets/$path");
                 

@@ -10,5 +10,5 @@ new #[Layout('livewire-jalali-date-picker::layouts.app')] class extends Componen
 ?>
 
 <div>
-
+    
 </div>
