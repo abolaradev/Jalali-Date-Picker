@@ -16,7 +16,7 @@ class JalaliDatePicker
      */
     public function now() :Jalalian
     {
-        return Jalalian::now()->addMonths();
+        return Jalalian::now()->addMonths(3);
     }
     
 
@@ -108,21 +108,6 @@ class JalaliDatePicker
        
     }
 
-        
-    /**
-     * It indicates which day of the week the first day of the following month falls on.
-     *
-     * @return int
-     */
-    public function nextMonthFirstDay() :int
-    {
-        return $this->now()
-                    ->addMonths()
-                    ->getFirstDayOfMonth()
-                    ->getDayOfWeek();
-    }
-    
-
     /**
      * It returns the last days of the previous month.
      *
@@ -131,12 +116,12 @@ class JalaliDatePicker
     public function lastDaysPreviousMonth() :array
     {
         $days=[];
-        $endOfMonth=$this->now()
+        $endOfLastMonth=$this->now()
                          ->subMonths()
                          ->getEndDayOfMonth();
 
         for ($i=0 ; $i < $this->firstDayOfMonthWeekday() ; $i++) { 
-             $days[]=$endOfMonth->subDays($i)->getDay();
+             $days[]=$endOfLastMonth->subDays($i)->getDay();
         }
 
         $days = array_reverse($days);
@@ -172,8 +157,18 @@ class JalaliDatePicker
     public function firstDaysNextMonth() :array
     {
         $firstDay= $this->now()->addMonths()->getFirstDayOfMonth()->getDay();
+
+        $countOfGrids= count($this->lastDaysPreviousMonth()) + count($this->daysInMonth());
+
+        $remainingGrades = match (true) {
+            $countOfGrids <= 35 => 35 - $countOfGrids,
+            $countOfGrids > 35  => 42 - $countOfGrids
+        };
+
+        
+
         $days=[];
-        for ($i= $firstDay ; $i < $this->nextMonthFirstDay() ; $i++) { 
+        for ($i= $firstDay ; $i <= $remainingGrades ; $i++) { 
             $days[]=$i;
         }
 
@@ -186,7 +181,7 @@ class JalaliDatePicker
      *
      * @return void
      */
-    public function calenderGridLayout()
+    public function calenderGridLayout() :array
     {
         $grid= [
             'last-month' => $this->lastDaysPreviousMonth(),
@@ -196,5 +191,5 @@ class JalaliDatePicker
             
         return $grid;
     }
-    
+
 }
