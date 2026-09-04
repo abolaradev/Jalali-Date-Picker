@@ -2,24 +2,45 @@
 
 namespace Abolaradev\JalaliDatePicker;
 
-use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Support\Arr;
 use Morilog\Jalali\Jalalian;
 
 class JalaliDatePicker 
 {   
-
-    /**
-     * Obtaining the Jalali date
-     *
-     * @return Jalalian
-     */
-    public function now() :Jalalian
-    {
-        return Jalalian::now()->addMonths(3);
-    }
+    private $date;
     
 
+    
+    public function now()
+    {
+        return Jalalian::now();
+    }
+
+    /**
+     * Setting the Jalali date
+     *
+     * @param  mixed $year
+     * @param  mixed $month
+     * @param  mixed $day
+     * @return void
+     */
+    // public function setDate(int $year = null, int $month = null , int $day = null) :self
+    // {
+    //     $year = (is_null($year)) ? $this->now()->getYear()
+    //                              : $year;
+
+    //     $month = (is_null($month)) ? $this->now()->getMonth()
+    //                              : $month;
+
+    //     $day = (is_null($day)) ? $this->now()->getDay()
+    //                              : $day;
+     
+    //     $this->date = new Jalalian($year , $month , $day);
+
+    //     return $this;
+    // }   
+    
     /**
      * Retrieving the names of the Jalali calendar months
      *
@@ -31,7 +52,7 @@ class JalaliDatePicker
         $months=[];
 
         for ($i=0; $i < 12; $i++) { 
-            $months[] = ($i == 0) ? $jalalian
+            $months[$i+1] = ($i == 0) ? $jalalian
                                         : $jalalian->addMonths($i);
         }
         
@@ -41,14 +62,24 @@ class JalaliDatePicker
 
         return $months;
     }
+
+    // public function month()
+    // {
+    //     $months=$this->months();
+    //     return $months[$this->getDate()->getMonth()];
+    // }
     
+    // public function year()
+    // {
+    //     return $this->getDate()->getYear();
+    // }
 
     /**
      * Getting the days of the week
      *
      * @return array
      */
-    public function daysOfWeek() 
+    public function weekdays() 
     {
         $jalalian =$this->now()->getFirstDayOfWeek();
         $weekdays=[];
@@ -59,7 +90,7 @@ class JalaliDatePicker
         }
         
         $weekdays=array_reverse(Arr::map($weekdays,function($day){
-            return str_replace("\u{200C}", ' ', $day->format('%A'));
+            return $day->format('%a');
         }));
 
         array_unshift($weekdays,array_pop($weekdays));
@@ -67,31 +98,38 @@ class JalaliDatePicker
         return $weekdays;
     }
 
-
-    /**
-     * Getting the abbreviation for the days of the week
+      /**
+     * It takes a Jalali date in string format and returns the day of that date.
      *
-     * @return array
-     */
-    public function daysOfWeekAbbreviations() :array
-    {
-        $week=Arr::map($this->daysOfWeek(),function($day){ 
-            return mb_substr($day,0,1);
-        });
-        
-        return $week;
-    }
-       
-
-    /**
-     * Getting the day number of the month
-     *
+     * @param  string $date
      * @return int
      */
-    public function dayOfMonth() :int
+    public function getDayFromDateString(string $date) :int
     {
-        return $this->now()
-                    ->getDay();
+        $day = explode('/',$date);
+
+        return (int) end($day);
+    }
+
+        
+    /**
+     * It takes a Jalali date in string format and compares it with today's Jalali date.
+     *
+     * @param  string $date
+     * @return bool
+     */
+    public function isTodayFromDateString(string $date) :bool
+    {
+        $dateToArray = explode('/',$date);
+        $dateArrayWithKeys = [
+            'year' => $dateToArray[0],
+            'month' => $dateToArray[1],
+            'day' => $dateToArray[2],
+        ];
+
+        $jalalianDate = new Jalalian($dateArrayWithKeys['year'],$dateArrayWithKeys['month'],$dateArrayWithKeys['day'] , timezone: new DateTimeZone('ASIA/TEHRAN'));
+        
+        return $jalalianDate->isToday();
     }
 
     
@@ -117,11 +155,11 @@ class JalaliDatePicker
     {
         $days=[];
         $endOfLastMonth=$this->now()
-                         ->subMonths()
-                         ->getEndDayOfMonth();
+                             ->subMonths()
+                             ->getEndDayOfMonth();
 
         for ($i=0 ; $i < $this->firstDayOfMonthWeekday() ; $i++) { 
-             $days[]=$endOfLastMonth->subDays($i)->getDay();
+             $days[]=$endOfLastMonth->subDays($i)->format('Y/m/d');
         }
 
         $days = array_reverse($days);
@@ -141,8 +179,8 @@ class JalaliDatePicker
         $countOfDaysInMonth=$this->now()
                                  ->getMonthDays();
 
-        for ($i=1; $i <= $countOfDaysInMonth ; $i++) { 
-            $days[]=$i;
+        for ($i=0; $i < $countOfDaysInMonth ; $i++) { 
+            $days[]=$this->now()->getFirstDayOfMonth()->addDays($i)->format('Y/m/d');
         }
         
         return $days;
@@ -156,7 +194,7 @@ class JalaliDatePicker
      */
     public function firstDaysNextMonth() :array
     {
-        $firstDay= $this->now()->addMonths()->getFirstDayOfMonth()->getDay();
+        $firstDay= $this->now()->addMonths()->getFirstDayOfMonth();
 
         $countOfGrids= count($this->lastDaysPreviousMonth()) + count($this->daysInMonth());
 
@@ -165,11 +203,9 @@ class JalaliDatePicker
             $countOfGrids > 35  => 42 - $countOfGrids
         };
 
-        
-
         $days=[];
-        for ($i= $firstDay ; $i <= $remainingGrades ; $i++) { 
-            $days[]=$i;
+        for ($i= $firstDay->getDay() ; $i <= $remainingGrades ; $i++) { 
+            $days[]=$firstDay->addDays($i-1)->format('Y/m/d');
         }
 
         return $days;
@@ -181,15 +217,16 @@ class JalaliDatePicker
      *
      * @return void
      */
-    public function calenderGridLayout() :array
+    public function calendarGridLayout() :array
     {
         $grid= [
+            'weekdays'=> $this->weekdays(),
+            'months' => $this->months(),
             'last-month' => $this->lastDaysPreviousMonth(),
             'current-month' => $this->daysInMonth(),
-            'next-month' => $this->firstDaysNextMonth(),
+            'next-month' => $this->firstDaysNextMonth()
         ];
             
         return $grid;
     }
-
 }
