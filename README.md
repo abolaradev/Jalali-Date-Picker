@@ -1,4 +1,4 @@
-# livewire-jalali-date-picker
+# jalali-date-picker
 ======
 
 ## Installation
@@ -6,13 +6,13 @@
 You can install the package via Composer:
 
 ```bash
-composer require abolaradev/livewire-jalali-date-picker
+composer require abolaradev/jalali-date-picker
 ```
 
 You can publish and run the migrations with:
 
 ```bash
-php artisan vendor:publish --tag='livewire-jalali-date-picker-migrations'
+php artisan vendor:publish --tag='jalali-date-picker-migrations'
 ```
 
 Then run the migrations:
@@ -24,13 +24,13 @@ php artisan migrate
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag='livewire-jalali-date-picker-config'
+php artisan vendor:publish --tag='jalali-date-picker-config'
 ```
 
 Optionally, you can publish the views using:
 
 ```bash
-php artisan vendor:publish --tag='livewire-jalali-date-picker-views'
+php artisan vendor:publish --tag='jalali-date-picker-views'
 ```
 
 ## Usage

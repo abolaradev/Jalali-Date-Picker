@@ -4,7 +4,7 @@
         <meta charset='utf-8'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
-        <title>{{ $title ?? 'livewire-jalali-date-picker' }}</title>
+        <title>{{ $title ?? 'jalali-date-picker' }}</title>
 
         @livewireStyles
     </head>

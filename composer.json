@@ -1,12 +1,12 @@
 {
-    "name": "abolaradev/livewire-jalali-date-picker",
+    "name": "abolaradev/jalali-date-picker",
     "description": "A package for selecting Jalali dates in Livewire",
     "keywords": [
         "abolaradev",
         "laravel",
-        "livewire-jalali-date-picker"
+        "jalali-date-picker"
     ],
-    "homepage": "https://github.com/abolaradev/livewire-jalali-date-picker",
+    "homepage": "https://github.com/abolaradev/jalali-date-picker",
     "license": "MIT",
     "authors": [
         {
