@@ -25,7 +25,7 @@ class JalaliDatePickerServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
+        
         // Register the package views as a Livewire namespace
         Livewire::addNamespace(
             namespace: 'jalali-date-picker',

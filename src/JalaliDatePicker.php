@@ -9,6 +9,14 @@ use Morilog\Jalali\Jalalian;
 class JalaliDatePicker 
 {   
     private $date;
+
+    private $timezone;
+
+    public function __construct()
+    {
+        $defaultTimezone = config('jalali-date-picker.timezone');
+        $this->timezone = new DateTimeZone($defaultTimezone);
+    }
         
     /**
      * It returns the current Jalali date.
@@ -17,7 +25,7 @@ class JalaliDatePicker
      */
     public function now() :Jalalian
     {
-        return Jalalian::now();
+        return Jalalian::now($this->timezone);
     }
 
     /**
@@ -39,7 +47,12 @@ class JalaliDatePicker
         $day = (is_null($day)) ? $this->now()->getDay()
                                  : $day;
      
-        $this->date = new Jalalian($year , $month , $day);
+        $this->date = new Jalalian(
+           year: $year ,
+           month: $month ,
+           day: $day , 
+           timezone: $this->timezone
+        );
 
         return $this;
     }   
@@ -128,7 +141,7 @@ class JalaliDatePicker
             year: $dateArrayWithKeys['year'],
             month: $dateArrayWithKeys['month'],
             day: $dateArrayWithKeys['day'] , 
-            timezone: new DateTimeZone('ASIA/TEHRAN')
+            timezone: $this->timezone
         );
         
         return $jalalianDate->isToday();
@@ -141,8 +154,8 @@ class JalaliDatePicker
      */
     public function today() :string
     {
-        return Jalalian::now()
-                       ->format('Y/m/d');
+        return $this->now()
+                    ->format('Y/m/d');
     }
     
     /**

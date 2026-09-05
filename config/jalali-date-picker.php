@@ -1,6 +1,7 @@
 <?php
 
 // config for Abolaradev/JalaliDatePicker
-return [
 
+return [
+    'timezone' => 'Asia/Tehran',
 ];
