@@ -9,9 +9,3 @@ function package_asset(string $path)
                                 : url()->query("assets/$path" ,['ver'=>time()]);
     return $path;
 }
-
-
-function isToday(string $date)
-{
-    return JalaliDatePicker::isTodayFromDateString($date);
-}

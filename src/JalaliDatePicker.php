@@ -9,10 +9,13 @@ use Morilog\Jalali\Jalalian;
 class JalaliDatePicker 
 {   
     private $date;
-    
-
-    
-    public function now()
+        
+    /**
+     * It returns the current Jalali date.
+     *
+     * @return Jalalian
+     */
+    public function now() :Jalalian
     {
         return Jalalian::now();
     }
@@ -128,7 +131,17 @@ class JalaliDatePicker
         
         return $jalalianDate->isToday();
     }
-
+    
+    /**
+     * It returns today's Jalali date as a simple string, based on the specified format.
+     *
+     * @return string
+     */
+    public function today() :string
+    {
+        return Jalalian::now()
+                       ->format('Y/m/d');
+    }
     
     /**
      * It indicates which day of the first week of the month the first day of the month falls on.
