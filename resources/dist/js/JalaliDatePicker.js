@@ -30,6 +30,10 @@ Alpine.data('jalaliDatePicker',()=>({
 
         ['x-on:click'](){
             this.showCalendar = !this.showCalendar
+        },
+
+        ['x-on:keydown'](event){
+            event.preventDefault()
         }
     },
 

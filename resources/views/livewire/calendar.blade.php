@@ -17,6 +17,14 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     */
    public bool $outsideClose = true ; 
 
+   
+   /**
+    * Specifies whether the days of the week are displayed in full or abbreviated form.
+    */
+   public bool $abbreviatingWeekdays = true;
+
+
+
    /**
     * Getting the days of the week
     */
@@ -39,7 +47,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     public function mount()
     {
         $this->today=JalaliDatePicker::today();
-        $this->weekdays = JalaliDatePicker::weekdays();
+        $this->weekdays = JalaliDatePicker::weekdays($this->abbreviatingWeekdays);
     }
 
     public function render()
@@ -68,14 +76,19 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
         </div>
 
          {{-- calendar  --}}
-           <div class="flex flex-col justify-between  text-center  bg-fuchsia-50 border-stone-300 w-fit p-2 rounded-b-2xl gap-2 select-none " x-bind="calendar" x-cloak >
+           <div class="flex flex-col justify-between  text-center  bg-fuchsia-50 border-stone-300 max-w-full py-2 px-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" >
              <div class="flex flex-col bg-fuchsia-700 text-fuchsia-100">
               
+
+
                 {{-- weekdays --}}
-                 <div class="grid grid-cols-7 text-xs bg-fuchsia-700">
+                 <div {{  $attributes->class([
+                         'grid grid-cols-7 py-2 gap-1 font-semibold',
+                         'text-sm ' => $abbreviatingWeekdays ,
+                         'text-[0.68rem]' => !$abbreviatingWeekdays
+                        ]) }} >
                     @foreach ($weekdays as $weekday)
                          <span
-                              class="p-2 font-semibold"
                               wire:key="weekday-{{ $loop->iteration }}">
                               {{ $weekday }}
                          </span>

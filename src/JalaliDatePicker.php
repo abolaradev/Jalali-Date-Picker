@@ -81,13 +81,14 @@ class JalaliDatePicker
     // {
     //     return $this->getDate()->getYear();
     // }
-
+    
     /**
      * Getting the days of the week
      *
-     * @return array
+     * @param  bool $abbreviating
+     * @return void
      */
-    public function weekdays() 
+    public function weekdays(bool $abbreviating) :array
     {
         $jalalian =$this->now()->getFirstDayOfWeek();
         $weekdays=[];
@@ -96,9 +97,10 @@ class JalaliDatePicker
             $weekdays[] = ($i == 0) ? $jalalian
                                     : $jalalian->subDays($i);
         }
-        
-        $weekdays=array_reverse(Arr::map($weekdays,function($day){
-            return $day->format('%a');
+        $format = $abbreviating ? '%a' 
+                                : '%A';
+        $weekdays=array_reverse(Arr::map($weekdays,function($day) use($format){
+            return $day->format($format);
         }));
 
         array_unshift($weekdays,array_pop($weekdays));
