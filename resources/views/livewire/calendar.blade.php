@@ -23,7 +23,10 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     */
    public bool $abbreviatingWeekdays = true;
 
-
+   /**
+    * Display calendar day numbers in Persian.
+    */
+   public bool $withPersianDigits = false;
 
    /**
     * Getting the days of the week
@@ -34,7 +37,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     * Get the selected date
     */
    #[Modelable]
-    public mixed $selectedDate;
+    public $selectedDate;
 
 
     public  $today;
@@ -79,7 +82,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
            <div class="flex flex-col justify-between  text-center  bg-fuchsia-50 border-stone-300 max-w-full py-2 px-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" >
              <div class="flex flex-col bg-fuchsia-700 text-fuchsia-100">
               
-
+               
 
                 {{-- weekdays --}}
                  <div {{  $attributes->class([
@@ -97,7 +100,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
             </div>  
 
              {{-- calender layout  --}}
-              <div class="grid grid-cols-7 gap-1 text-sm">
+              <div class="grid grid-cols-7 gap-1 text-sm" x-bind="grid">
 
             {{-- Days of the previous month --}}
                @foreach ($grid->last_month as $day)

@@ -20,6 +20,10 @@ Alpine.data('jalaliDatePicker',()=>({
         return parseInt(date.split('/').pop());
     },
 
+    toPersianDigits(value) {
+        return value.toString().replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[digit])
+    },
+
 
     // Defines the bindings and behavior of the DatePicker input.
     input:{
@@ -79,6 +83,21 @@ Alpine.data('jalaliDatePicker',()=>({
         ['x-on:click.outside'](){
             if(this.$wire.outsideClose){
                 this.showCalendar = false
+            }
+        }
+    },
+
+    // Converts all calendar button text to Persian digits when enabled.
+    grid: {
+        ['x-init'](){
+            if(this.$wire.get('withPersianDigits')){
+                this.$nextTick(() => {
+                    let buttons = this.$el.querySelectorAll('button')
+
+                    buttons.forEach(button => {
+                        button.textContent = this.toPersianDigits(button.textContent)
+                    })
+                })
             }
         }
     },
