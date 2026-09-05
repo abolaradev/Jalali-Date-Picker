@@ -51,7 +51,7 @@ Alpine.data('jalaliDatePicker',()=>({
         'x-transition:leave-end': 'opacity-0 translate-x-2',
 
         ['x-show'](){
-            return this.selectedDate != ""
+            return this.selectedDate != "" && this.$wire.get('showResetDateButton')
         },
 
         ['x-on:click'](){

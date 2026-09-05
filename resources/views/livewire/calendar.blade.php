@@ -17,7 +17,6 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     */
    public bool $outsideClose = true ; 
 
-   
    /**
     * Specifies whether the days of the week are displayed in full or abbreviated form.
     */
@@ -27,6 +26,11 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     * Display calendar day numbers in Persian.
     */
    public bool $withPersianDigits = false;
+
+   /**
+    * Display the button to reset the selected date.
+    */
+   public bool $showResetDateButton = true;
 
    /**
     * Getting the days of the week
