@@ -6,10 +6,14 @@ use Livewire\Component;
 
 new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 {
+    public $date;
   
 };
 ?>
 
 <div class=" h-screen flex items-center justify-center bg-stone-500">
-     <livewire:jalali-date-picker::calendar/>
+     {{ $date }}
+     <livewire:jalali-date-picker::calendar wire:model="date"/>
+     {{-- <button wire:click="$refresh">click</button> --}}
+
 </div>

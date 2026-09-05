@@ -2,13 +2,35 @@
 
 use Abolaradev\JalaliDatePicker\Facades\JalaliDatePicker;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Modelable;
 use Livewire\Component;
 
 new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 {
-    public array $weekdays;
+   /**
+   * Determines whether the calendar should close after selecting a date.
+   */
+   public bool $autoClose=true;
 
-    public $selectedDate;
+   /**
+    * Specifies that the calendar closes when clicking outside its area.
+    */
+   public bool $outsideClose = true ; 
+
+   /**
+    * Getting the days of the week
+    */
+   public array $weekdays;
+
+   /**
+    * Get the selected date
+    */
+   #[Modelable]
+    public mixed $selectedDate;
+
+
+    public  $today;
+
 
     public $year;
     public $month;
@@ -16,13 +38,13 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 
     public function mount()
     {
+        $this->today=JalaliDatePicker::today();
         $this->weekdays = JalaliDatePicker::weekdays();
     }
 
-   
-
     public function render()
     {
+
        return $this->view([
           'grid'=> JalaliDatePicker::setDate($this->year,$this->month,$this->day)
                                    ->calendarGridLayout()
@@ -33,15 +55,20 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 };
 ?>
 
-<div class="min-w-80" x-data="jalaliDatePicker">
+<div class="min-w-80" x-data="jalaliDatePicker" x-cloak>
         {{-- input  --}}
-      
-         <input x-bind="input" 
-                class="p-2 border border-stone-300 outline-none caret-transparent w-full"
-                wire:model.live='selectedDate'>
-   
+        <div class="relative">
+          <input x-bind="input" 
+                 class="p-2 border border-stone-300 outline-none caret-transparent w-full z-50">
+             <button class=" absolute inset-y-0 right-0 px-2 cursor-pointer z-90 h-full" x-bind="resetDateButton">
+             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+               </svg>
+             </button>
+        </div>
+
          {{-- calendar  --}}
-           <div class="flex flex-col justify-between  text-center  bg-fuchsia-50 border-stone-300 p-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" x-cloak >
+           <div class="flex flex-col justify-between  text-center  bg-fuchsia-50 border-stone-300 w-fit p-2 rounded-b-2xl gap-2 select-none " x-bind="calendar" x-cloak >
              <div class="flex flex-col bg-fuchsia-700 text-fuchsia-100">
               
                 {{-- weekdays --}}
@@ -63,22 +90,15 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                @foreach ($grid->last_month as $day)
                   <button
                          class="h-9 rounded-md px-3 bg-fuchsia-200 opacity-50 text-fuchsia-700"
-                         wire:key="{{ $day }}"
                          x-bind="unselectableDays"
-                         value="{{ $day }}">
-                    </button>
+                         wire:key="{{ $day }}"
+                         value="{{ $day }}"></button>
                @endforeach
 
                {{-- The days of this month --}}
                 @foreach ($grid->current_month as $day)
                     <button
-                         {{ $attributes->class([
-                              'h-9 rounded-md px-3 cursor-pointer',
-                              'bg-fuchsia-700 text-fuchsia-100 font-semibold transition-colors duration-300 ' => $selectedDate == $day,
-                              'bg-fuchsia-200 text-fuchsia-700 hover:bg-fuchsia-300' => $selectedDate != $day,
-                              'border border-fuchsia-700' => isToday($day)
-
-                         ]) }}
+                            class="h-9 rounded-md px-3 cursor-pointer"
                             x-bind="selectableDays"
                             wire:key="{{ $day }}"
                             value="{{ $day }}"></button>
@@ -88,14 +108,10 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                @foreach ($grid->next_month as $day)
                   <button
                          class="h-9 rounded-md px-3 bg-fuchsia-200 opacity-50 text-fuchsia-700"
-                         wire:key="{{ $day }}"
                          x-bind="unselectableDays"
-                         value="{{ $day }}">
-                    </button>
+                         wire:key="{{ $day }}"
+                         value="{{ $day }}"></button>
                @endforeach
-
-
-
             </div>
          </div>
 </div>
