@@ -13,9 +13,13 @@ Alpine.data('jalaliDatePicker',()=>({
     
     // Initializes the DatePicker state and synchronizes it with Livewire.
     init(){
-        this.$wire.selectedDate = this.selectedDate
+
         this.color = this.$wire.get('color')
         this.today = this.$wire.get('today')
+
+        this.$watch('selectedDate' , ()=>{
+            this.$wire.selectedDate= this.selectedDate
+        })
     },
 
     // Extracts the day number from a Jalali date string.
@@ -119,6 +123,7 @@ Alpine.data('jalaliDatePicker',()=>({
     unselectableDays:{
         type : 'button',
         disabled : true,
+        class : 'h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700',
         
         ['x-text'](){
             return this.getDayFromDateString();
@@ -134,39 +139,39 @@ Alpine.data('jalaliDatePicker',()=>({
         },
 
         ['x-on:click'](){
-            this.selectedDate =this.$el.value 
+            this.selectedDate = this.$el.value 
 
             if(this.$wire.get('autoClose')){
                 this.showCalendar =false;
             }
-        },
+
+     },
 
         // Applies the appropriate styles to the day based on today's
         // date and the currently selected date.
         [':class'](){ 
-           const classes = []
 
-           if (this.today == this.$el.value) {
-                classes.push('border')
-           }
+           let buttonClass ='h-9 rounded-md px-3 cursor-pointer '
 
-           if (this.selectedDate == this.$el.value) {
-                classes.push(
-                    'bg-color-700',
-                    'text-color-100',
-                    'font-semibold',
-                    'transition-colors',
-                    'duration-300'
-                )
-           } else {
-                classes.push(
-                    'bg-color-100',
-                    'text-color-700',
-                    'hover:bg-color-200'
-                )
-           }
+        //    if(this.selectedDate == this.$el.value){
+        //         console.log([
+        //             this.selectedDate, typeof this.selectedDate,
+        //             this.$el.value, typeof this.$el.value
+        //         ])
+        //         buttonClass += 'bg-color-700 text-color-100 font-semibold duration-300'
+        //    }else{
+        //         console.log('as')
+        //         buttonClass += 'bg-color-100 text-color-700 hover:bg-color-200'
+        //    }
 
-            return classes.join(' ')
+        //    if (this.today == this.$el.value) {
+        //         buttonClass += ' border border-color-700 '
+        //    }
+
+        //    buttonClass.replace(/color/, 'red')
+           
+
+           return buttonClass
         },
     }
 }))
