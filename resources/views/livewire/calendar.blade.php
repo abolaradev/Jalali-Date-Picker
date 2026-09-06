@@ -3,6 +3,7 @@
 use Abolaradev\JalaliDatePicker\Facades\JalaliDatePicker;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Modelable;
+use Livewire\Attributes\Reactive;
 use Livewire\Component;
 
 new #[Layout('jalali-date-picker::layouts.app')] class extends Component
@@ -32,6 +33,9 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     */
    public bool $showResetDateButton = true;
 
+   /**
+    * Set calendar color
+    */
    public string $color = 'blue';
 
    /**
@@ -86,16 +90,16 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 
          {{-- calendar  --}}
            <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 max-w-full py-2 px-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" >
-             <div class="flex flex-col bg-color-700 text-color-100">
+             <div class="flex flex-col" x-bind="header">
               
-               
+               <div>1405</div>
 
                 {{-- weekdays --}}
-                 <div {{  $attributes->class([
-                         'grid grid-cols-7 py-2 gap-1 font-semibold',
-                         'text-sm ' => $abbreviatingWeekdays ,
-                         'text-[0.68rem]' => !$abbreviatingWeekdays
-                        ]) }} >
+                 <div @class([
+                        "grid grid-cols-7 py-2 gap-1 font-semibold", 
+                        'text-sm' => $abbreviatingWeekdays,
+                        'text-[0.68rem]' => !$abbreviatingWeekdays
+                     ]) >
                     @foreach ($weekdays as $weekday)
                          <span
                               wire:key="weekday-{{ $loop->iteration }}">
@@ -110,29 +114,23 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 
             {{-- Days of the previous month --}}
                @foreach ($grid->last_month as $day)
-                  <button
-                         class="h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700"
-                         x-bind="unselectableDays"
-                         wire:key="{{ $day }}"
-                         value="{{ $day }}"></button>
+                  <button x-bind="unselectableDays"
+                          wire:key="{{ $day }}"
+                          value="{{ $day }}"></button>
                @endforeach
 
                {{-- The days of this month --}}
                 @foreach ($grid->current_month as $day)
-                    <button
-                            class="h-9 rounded-md px-3 cursor-pointer"
-                            x-bind="selectableDays"
+                    <button x-bind="selectableDays"
                             wire:key="{{ $day }}"
                             value="{{ $day }}"></button>
                @endforeach
 
               {{-- Days of the next month --}}
                @foreach ($grid->next_month as $day)
-                  <button
-                         class="h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700"
-                         x-bind="unselectableDays"
-                         wire:key="{{ $day }}"
-                         value="{{ $day }}"></button>
+                  <button x-bind="unselectableDays"
+                          wire:key="{{ $day }}"
+                          value="{{ $day }}"></button>
                @endforeach
             </div>
          </div>

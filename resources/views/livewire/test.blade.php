@@ -12,8 +12,8 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 ?>
 
 <div class=" min-h-screen flex items-center justify-center bg-stone-500">
-     {{ $date }}
-     <livewire:jalali-date-picker::calendar wire:model="date"/>
-     {{-- <button wire:click="$refresh">click</button> --}}
+     
+     <livewire:jalali-date-picker::calendar wire:model="date" sasd/>
+     <button wire:click="$refresh">click</button>
 
 </div>

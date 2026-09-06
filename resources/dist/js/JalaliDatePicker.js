@@ -32,6 +32,10 @@ Alpine.data('jalaliDatePicker',()=>({
         return value.toString().replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[digit])
     },
 
+    // Color coordination of calendar elements
+    changeCalendarColor(classes){
+        return classes.replace(/color/gi, this.color)
+    },
 
     // Defines the bindings and behavior of the DatePicker input.
     input:{
@@ -92,15 +96,13 @@ Alpine.data('jalaliDatePicker',()=>({
             if(this.$wire.outsideClose){
                 this.showCalendar = false
             }
-        },
+        }
+    },
 
-        // Change calendar color
-        ['x-init'](){
-            this.$nextTick( () => {
-                this.$el.querySelectorAll('[class]').forEach(element => {
-                   element.className = element.className.replaceAll('color', this.color)
-                })
-            })
+    header: {
+        [':class'](){
+            let headerClass = "bg-color-700 text-color-100"
+            return this.changeCalendarColor(headerClass)
         }
     },
 
@@ -123,8 +125,12 @@ Alpine.data('jalaliDatePicker',()=>({
     unselectableDays:{
         type : 'button',
         disabled : true,
-        class : 'h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700',
-        
+
+        [':class'](){
+            let unselectableButtonsClass = 'h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700'
+            return this.changeCalendarColor(unselectableButtonsClass)
+        },
+
         ['x-text'](){
             return this.getDayFromDateString();
         },
@@ -145,33 +151,25 @@ Alpine.data('jalaliDatePicker',()=>({
                 this.showCalendar =false;
             }
 
-     },
+        },
 
         // Applies the appropriate styles to the day based on today's
         // date and the currently selected date.
         [':class'](){ 
 
-           let buttonClass ='h-9 rounded-md px-3 cursor-pointer '
+           let selectableButtonsClass ='h-9 rounded-md px-3 cursor-pointer '
 
-        //    if(this.selectedDate == this.$el.value){
-        //         console.log([
-        //             this.selectedDate, typeof this.selectedDate,
-        //             this.$el.value, typeof this.$el.value
-        //         ])
-        //         buttonClass += 'bg-color-700 text-color-100 font-semibold duration-300'
-        //    }else{
-        //         console.log('as')
-        //         buttonClass += 'bg-color-100 text-color-700 hover:bg-color-200'
-        //    }
+           if(this.selectedDate == this.$el.value){
+                selectableButtonsClass += 'bg-color-700 text-color-100 font-semibold duration-300'
+           }else{
+                selectableButtonsClass += 'bg-color-100 text-color-700 hover:bg-color-200'
+           }
 
-        //    if (this.today == this.$el.value) {
-        //         buttonClass += ' border border-color-700 '
-        //    }
+           if (this.today == this.$el.value) {
+                selectableButtonsClass += ' border border-color-700 '
+           }
 
-        //    buttonClass.replace(/color/, 'red')
-           
-
-           return buttonClass
+            return this.changeCalendarColor(selectableButtonsClass)
         },
     }
 }))
