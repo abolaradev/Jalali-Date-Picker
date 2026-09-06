@@ -7,10 +7,14 @@ Alpine.data('jalaliDatePicker',()=>({
 
     // Stores today's Jalali date.
     today : '',
+
+    // Stores colors's calendar.
+    color : '',
     
     // Initializes the DatePicker state and synchronizes it with Livewire.
     init(){
         this.$wire.selectedDate = this.selectedDate
+        this.color = this.$wire.get('color')
         this.today = this.$wire.get('today')
     },
 
@@ -84,6 +88,15 @@ Alpine.data('jalaliDatePicker',()=>({
             if(this.$wire.outsideClose){
                 this.showCalendar = false
             }
+        },
+
+        // Change calendar color
+        ['x-init'](){
+            this.$nextTick( () => {
+                this.$el.querySelectorAll('[class]').forEach(element => {
+                   element.className = element.className.replaceAll('color', this.color)
+                })
+            })
         }
     },
 
@@ -139,17 +152,17 @@ Alpine.data('jalaliDatePicker',()=>({
 
            if (this.selectedDate == this.$el.value) {
                 classes.push(
-                    'bg-fuchsia-700',
-                    'text-fuchsia-100',
+                    'bg-color-700',
+                    'text-color-100',
                     'font-semibold',
                     'transition-colors',
                     'duration-300'
                 )
            } else {
                 classes.push(
-                    'bg-fuchsia-200',
-                    'text-fuchsia-700',
-                    'hover:bg-fuchsia-300'
+                    'bg-color-100',
+                    'text-color-700',
+                    'hover:bg-color-200'
                 )
            }
 

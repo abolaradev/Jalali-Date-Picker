@@ -32,6 +32,8 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     */
    public bool $showResetDateButton = true;
 
+   public string $color = 'blue';
+
    /**
     * Getting the days of the week
     */
@@ -83,8 +85,8 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
         </div>
 
          {{-- calendar  --}}
-           <div class="flex flex-col justify-between  text-center  bg-fuchsia-50 border-stone-300 max-w-full py-2 px-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" >
-             <div class="flex flex-col bg-fuchsia-700 text-fuchsia-100">
+           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 max-w-full py-2 px-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" >
+             <div class="flex flex-col bg-color-700 text-color-100">
               
                
 
@@ -109,7 +111,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
             {{-- Days of the previous month --}}
                @foreach ($grid->last_month as $day)
                   <button
-                         class="h-9 rounded-md px-3 bg-fuchsia-200 opacity-50 text-fuchsia-700"
+                         class="h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700"
                          x-bind="unselectableDays"
                          wire:key="{{ $day }}"
                          value="{{ $day }}"></button>
@@ -127,7 +129,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
               {{-- Days of the next month --}}
                @foreach ($grid->next_month as $day)
                   <button
-                         class="h-9 rounded-md px-3 bg-fuchsia-200 opacity-50 text-fuchsia-700"
+                         class="h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700"
                          x-bind="unselectableDays"
                          wire:key="{{ $day }}"
                          value="{{ $day }}"></button>
