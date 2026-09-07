@@ -26,7 +26,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
    /**
     * Display calendar day numbers in Persian.
     */
-   public bool $withPersianDigits = false;
+   public bool $withPersianDigits = true;
 
    /**
     * Display the button to reset the selected date.
@@ -37,6 +37,11 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
     * Set calendar color
     */
    public string $color = 'blue';
+
+
+   // public string $theme = 'light';
+
+
 
    /**
     * Getting the days of the week
@@ -89,7 +94,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
         </div>
 
          {{-- calendar  --}}
-           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 max-w-full py-2 px-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" >
+           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 py-2 px-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" >
              <div class="flex flex-col" x-bind="header">
               
                <div>1405</div>
@@ -110,7 +115,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
             </div>  
 
              {{-- calender layout  --}}
-              <div class="grid grid-cols-7 gap-1 text-sm" x-bind="grid">
+              <div class="grid grid-cols-7 gap-1 text-sm">
 
             {{-- Days of the previous month --}}
                @foreach ($grid->last_month as $day)

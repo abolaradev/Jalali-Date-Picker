@@ -96,28 +96,30 @@ Alpine.data('jalaliDatePicker',()=>({
             if(this.$wire.outsideClose){
                 this.showCalendar = false
             }
-        }
+        },
+        
+         // Converts all calendar button text to Persian digits when enabled.
+        ['x-init'](){
+            this.$nextTick(() => {
+                const walker = document.createTreeWalker(
+                    this.$el,
+                    NodeFilter.SHOW_TEXT
+                )
+
+                let node
+
+                while (node = walker.nextNode()) {
+                    node.nodeValue = this.toPersianDigits(node.nodeValue)
+                }
+            })
+        }  
+
     },
 
     header: {
         [':class'](){
             let headerClass = "bg-color-700 text-color-100"
             return this.changeCalendarColor(headerClass)
-        }
-    },
-
-    // Converts all calendar button text to Persian digits when enabled.
-    grid: {
-        ['x-init'](){
-            if(this.$wire.get('withPersianDigits')){
-                this.$nextTick(() => {
-                    let buttons = this.$el.querySelectorAll('button')
-
-                    buttons.forEach(button => {
-                        button.textContent = this.toPersianDigits(button.textContent)
-                    })
-                })
-            }
         }
     },
 
