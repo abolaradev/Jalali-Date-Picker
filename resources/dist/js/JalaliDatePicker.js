@@ -37,41 +37,44 @@ Alpine.data('jalaliDatePicker',()=>({
         return classes.replace(/color/gi, this.color)
     },
 
-    // Defines the bindings and behavior of the DatePicker input.
-    input:{
-        type : 'text',
-        readonly : true ,
-        'x-ref' : 'picker',
-        'x-model' : 'selectedDate',
+    input : {
+        // Defines the bindings and behavior of the DatePicker input.
+        input:{
+            type : 'text',
+            readonly : true ,
+            'x-ref' : 'picker',
+            'x-model' : 'selectedDate',
 
-        ['x-on:click'](){
-            this.showCalendar = !this.showCalendar
-        },
+            ['x-on:click'](){
+                this.showCalendar = !this.showCalendar
+            },
 
-        ['x-on:keydown'](event){
-            event.preventDefault()
-        }
-    },
-
-    // Defines the reset button behavior and its transition animations.
-    resetDateButton:{
-        'x-transition:enter': 'transition ease-out duration-200',
-        'x-transition:enter-start': 'opacity-0 translate-x-2',
-        'x-transition:enter-end': 'opacity-100 translate-x-0',
-        'x-transition:leave': 'transition ease-in duration-150',
-        'x-transition:leave-start': 'opacity-100 translate-x-0',
-        'x-transition:leave-end': 'opacity-0 translate-x-2',
-
-        ['x-show'](){
-            return this.selectedDate != "" && this.$wire.get('showResetDateButton')
-        },
-
-        ['x-on:click'](){
-            if(this.selectedDate != "") {
-                this.selectedDate = ""
+            ['x-on:keydown'](event){
+                event.preventDefault()
             }
-        }
+        },
+
+         // Defines the reset button behavior and its transition animations.
+        resetDateButton:{
+            'x-transition:enter': 'transition ease-out duration-200',
+            'x-transition:enter-start': 'opacity-0 translate-x-2',
+            'x-transition:enter-end': 'opacity-100 translate-x-0',
+            'x-transition:leave': 'transition ease-in duration-150',
+            'x-transition:leave-start': 'opacity-100 translate-x-0',
+            'x-transition:leave-end': 'opacity-0 translate-x-2',
+
+            ['x-show'](){
+                return this.selectedDate != "" && this.$wire.get('showResetDateButton')
+            },
+
+            ['x-on:click'](){
+                if(this.selectedDate != "") {
+                    this.selectedDate = ""
+                }
+            }
+        },
     },
+
 
     // Defines the calendar container behavior, positioning, and transitions.
     calendar:{
@@ -100,78 +103,81 @@ Alpine.data('jalaliDatePicker',()=>({
         
          // Converts all calendar button text to Persian digits when enabled.
         ['x-init'](){
-            this.$nextTick(() => {
-                const walker = document.createTreeWalker(
-                    this.$el,
-                    NodeFilter.SHOW_TEXT
-                )
+            if(this.$wire.get('withPersianDigits')){
+                this.$nextTick(() => {
+                    const walker = document.createTreeWalker(
+                        this.$el,
+                        NodeFilter.SHOW_TEXT
+                    )
 
-                let node
+                    let node
 
-                while (node = walker.nextNode()) {
-                    node.nodeValue = this.toPersianDigits(node.nodeValue)
-                }
-            })
-        }  
+                    while (node = walker.nextNode()) {
+                        node.nodeValue = this.toPersianDigits(node.nodeValue)
+                    }
+                })
+            }
+        },
 
-    },
 
-    header: {
+        weekdays: {
         [':class'](){
             let headerClass = "bg-color-700 text-color-100"
             return this.changeCalendarColor(headerClass)
-        }
-    },
-
-    // Defines the bindings for days that cannot be selected.
-    unselectableDays:{
-        type : 'button',
-        disabled : true,
-
-        [':class'](){
-            let unselectableButtonsClass = 'h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700'
-            return this.changeCalendarColor(unselectableButtonsClass)
+            }
         },
 
-        ['x-text'](){
-            return this.getDayFromDateString();
+
+        // Defines the bindings for days that cannot be selected.
+        unselectableDays:{
+            type : 'button',
+            disabled : true,
+
+            [':class'](){
+                let unselectableButtonsClass = 'h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700'
+                return this.changeCalendarColor(unselectableButtonsClass)
+            },
+
+            ['x-text'](){
+                return this.getDayFromDateString();
+            },
         },
-    },
 
-    // Defines the bindings and behavior for selectable calendar days.
-    selectableDays : {
-        type : 'button',
-        
-        ['x-text'](){
-            return this.getDayFromDateString();
-        },
+        // Defines the bindings and behavior for selectable calendar days.
+        selectableDays : {
+            type : 'button',
+            
+            ['x-text'](){
+                return this.getDayFromDateString();
+            },
 
-        ['x-on:click'](){
-            this.selectedDate = this.$el.value 
+            ['x-on:click'](){
+                this.selectedDate = this.$el.value 
 
-            if(this.$wire.get('autoClose')){
-                this.showCalendar =false;
+                if(this.$wire.get('autoClose')){
+                    this.showCalendar =false;
+                }
+
+            },
+
+            // Applies the appropriate styles to the day based on today's
+            // date and the currently selected date.
+            [':class'](){ 
+
+            let selectableButtonsClass ='h-9 rounded-md px-3 cursor-pointer '
+
+            if(this.selectedDate == this.$el.value){
+                    selectableButtonsClass += 'bg-color-700 text-color-100 font-semibold duration-300'
+            }else{
+                    selectableButtonsClass += 'bg-color-100 text-color-700 hover:bg-color-200'
             }
 
-        },
+            if (this.today == this.$el.value) {
+                    selectableButtonsClass += ' border border-color-700 '
+            }
 
-        // Applies the appropriate styles to the day based on today's
-        // date and the currently selected date.
-        [':class'](){ 
-
-           let selectableButtonsClass ='h-9 rounded-md px-3 cursor-pointer '
-
-           if(this.selectedDate == this.$el.value){
-                selectableButtonsClass += 'bg-color-700 text-color-100 font-semibold duration-300'
-           }else{
-                selectableButtonsClass += 'bg-color-100 text-color-700 hover:bg-color-200'
-           }
-
-           if (this.today == this.$el.value) {
-                selectableButtonsClass += ' border border-color-700 '
-           }
-
-            return this.changeCalendarColor(selectableButtonsClass)
-        },
+                return this.changeCalendarColor(selectableButtonsClass)
+            }
+        }
     }
 }))

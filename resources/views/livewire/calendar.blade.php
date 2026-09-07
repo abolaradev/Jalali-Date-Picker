@@ -26,7 +26,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
    /**
     * Display calendar day numbers in Persian.
     */
-   public bool $withPersianDigits = true;
+   public bool $withPersianDigits = false;
 
    /**
     * Display the button to reset the selected date.
@@ -39,7 +39,6 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
    public string $color = 'blue';
 
 
-   // public string $theme = 'light';
 
 
 
@@ -83,10 +82,10 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 
 <div class="min-w-80" x-data="jalaliDatePicker" x-cloak>
         {{-- input  --}}
-        <div class="relative">
-          <input x-bind="input" 
+        <div class="relative" x-bind="input">
+          <input x-bind="input.input" 
                  class="p-2 border border-stone-300 outline-none caret-transparent w-full z-50">
-             <button class=" absolute inset-y-0 right-0 px-2 cursor-pointer z-90 h-full" x-bind="resetDateButton">
+             <button class=" absolute inset-y-0 right-0 px-2 cursor-pointer z-90 h-full" x-bind="input.resetDateButton">
              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                </svg>
@@ -94,8 +93,8 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
         </div>
 
          {{-- calendar  --}}
-           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 py-2 px-1 rounded-b-2xl gap-2 select-none " x-bind="calendar" >
-             <div class="flex flex-col" x-bind="header">
+           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 py-2 px-1 rounded-b-2xl gap-2 select-none  " x-bind="calendar" >
+             <div class="flex flex-col" x-bind="calendar.weekdays">
               
                <div>1405</div>
 
@@ -119,26 +118,26 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 
             {{-- Days of the previous month --}}
                @foreach ($grid->last_month as $day)
-                  <button x-bind="unselectableDays"
+                  <button x-bind="calendar.unselectableDays"
                           wire:key="{{ $day }}"
                           value="{{ $day }}"></button>
                @endforeach
 
                {{-- The days of this month --}}
                 @foreach ($grid->current_month as $day)
-                    <button x-bind="selectableDays"
+                    <button x-bind="calendar.selectableDays"
                             wire:key="{{ $day }}"
                             value="{{ $day }}"></button>
                @endforeach
 
               {{-- Days of the next month --}}
                @foreach ($grid->next_month as $day)
-                  <button x-bind="unselectableDays"
+                  <button x-bind="calendar.unselectableDays"
                           wire:key="{{ $day }}"
                           value="{{ $day }}"></button>
                @endforeach
-            </div>
-         </div>
+           </div>
+      </div>
 </div>
 
 @assets
