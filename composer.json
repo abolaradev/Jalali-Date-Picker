@@ -74,7 +74,8 @@
                 "Abolaradev\\JalaliDatePicker\\JalaliDatePickerServiceProvider"
             ],
             "aliases": {
-                "JalaliDatePicker": "Abolaradev\\JalaliDatePicker\\Facades\\JalaliDatePicker"
+                "JalaliDatePicker": "Abolaradev\\JalaliDatePicker\\Facades\\JalaliDatePicker",
+                "WithJalaliDatePicker": "Abolaradev\\JalaliDatePicker\\Traits\\WithJalaliDatePicker"
             }
         }
     },
