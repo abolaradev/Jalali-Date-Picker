@@ -53,7 +53,7 @@ class JalaliDatePicker
            day: $day , 
            timezone: $this->timezone
         );
-
+        
         return $this;
     }   
 
@@ -84,16 +84,16 @@ class JalaliDatePicker
         return $months;
     }
 
-    // public function month()
-    // {
-    //     $months=$this->months();
-    //     return $months[$this->getDate()->getMonth()];
-    // }
+    public function month()
+    {
+        $months=$this->months();
+        return $months[$this->getDate()->getMonth()];
+    }
     
-    // public function year()
-    // {
-    //     return $this->getDate()->getYear();
-    // }
+    public function year() :int
+    {
+        return $this->getDate()->getYear();
+    }
     
     /**
      * Getting the days of the week

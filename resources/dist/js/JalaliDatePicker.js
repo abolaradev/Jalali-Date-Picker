@@ -1,9 +1,16 @@
 Alpine.data('jalaliDatePicker',()=>({
+
     // Controls the visibility of the calendar.
     showCalendar : false,
 
     // Stores the currently selected Jalali date.
     selectedDate : '',
+
+    // Stores the currently selected month.
+    month : '',
+
+    // Stores the currently selected year.
+    year : '',
 
     // Stores today's Jalali date.
     today : '',
@@ -11,15 +18,19 @@ Alpine.data('jalaliDatePicker',()=>({
     // Stores colors's calendar.
     color : '',
     
+
+
+    showDateNavigationPanel : false,
+
+    showMonthPicker : false,
+
+    showYearPicker : false,
+
+
     // Initializes the DatePicker state and synchronizes it with Livewire.
     init(){
-
         this.color = this.$wire.get('color')
         this.today = this.$wire.get('today')
-
-        this.$watch('selectedDate' , ()=>{
-            this.$wire.selectedDate= this.selectedDate
-        })
     },
 
     // Extracts the day number from a Jalali date string.
@@ -47,6 +58,7 @@ Alpine.data('jalaliDatePicker',()=>({
 
             ['x-on:click'](){
                 this.showCalendar = !this.showCalendar
+                this.showDateNavigationPanel = false
             },
 
             ['x-on:keydown'](event){
@@ -55,7 +67,7 @@ Alpine.data('jalaliDatePicker',()=>({
         },
 
          // Defines the reset button behavior and its transition animations.
-        resetDateButton:{
+        reset:{
             'x-transition:enter': 'transition ease-out duration-200',
             'x-transition:enter-start': 'opacity-0 translate-x-2',
             'x-transition:enter-end': 'opacity-100 translate-x-0',
@@ -91,13 +103,14 @@ Alpine.data('jalaliDatePicker',()=>({
             return this.showCalendar
         },
 
-        ['x-anchor'](){
+        ['x-anchor.bottom-start'](){
             return this.$refs.picker
         },
 
         ['x-on:click.outside'](){
             if(this.$wire.outsideClose){
                 this.showCalendar = false
+                this.showDateNavigationPanel = false
             }
         },
         
@@ -116,6 +129,79 @@ Alpine.data('jalaliDatePicker',()=>({
                         node.nodeValue = this.toPersianDigits(node.nodeValue)
                     }
                 })
+            }
+        },
+
+        ['x-effect'](){
+            this.$wire.selectedDate = this.selectedDate
+            this.month = this.$wire.month
+            this.year = this.$wire.year
+        },
+
+
+        dateNavigationPanel :{
+
+            ['x-show'](){
+                return this.showDateNavigationPanel
+            },
+
+            'x-transition:enter': 'transition ease-out duration-200',
+            'x-transition:enter-start' : 'opacity-0 -translate-y-2 scale-95',
+            'x-transition:enter-end' : 'opacity-100 translate-y-0 scale-100',
+            'x-transition:leave' : 'transition ease-in duration-150',
+            'x-transition:leave-start' : 'opacity-100 translate-y-0 scale-100',
+            'x-transition:leave-end' : 'opacity-0 -translate-y-1 scale-95',
+
+            title:{
+                ['x-text'](){
+                    if(this.showMonthPicker){
+                        return 'انتخاب ماه'
+                    }
+                }
+            },
+
+            close:{
+                ['x-on:click'](){
+                    this.showDateNavigationPanel = false
+                    this.showMonthPicker = false
+                }
+            },
+
+            monthPicker :{
+                ['x-text'](){
+                    return this.month
+                },
+                ['x-on:click'](){
+                    this.showDateNavigationPanel = true
+                    this.showMonthPicker = true
+                }
+            },
+
+            button : {
+                type : 'button',
+
+                [':class'](){
+                    let buttonClasses = 'rounded-md min-h-9 cursor-pointer flex justify-center items-center border border-blue-100 '
+                    let buttonValue = this.$el.value
+                    if(buttonValue == this.month || buttonValue == this.month){
+                         buttonClasses += 'bg-blue-100 text-blue-700'
+                    }
+
+                    return buttonClasses
+                },
+
+                ['x-text'](){
+                    return this.$el.value
+                },
+
+                ['x-on:click'](){
+                   Livewire.hook('request', ({ succeed }) => {
+                        succeed(() => {
+                            this.showDateNavigationPanel = false
+                            this.showMonthPicker = false
+                        })
+                    })
+                }
             }
         },
 

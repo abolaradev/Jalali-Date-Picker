@@ -1,10 +1,12 @@
 <?php
 
 use Abolaradev\JalaliDatePicker\Facades\JalaliDatePicker;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Modelable;
 use Livewire\Attributes\Reactive;
 use Livewire\Component;
+use Morilog\Jalali\Jalalian;
 
 new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 {
@@ -39,19 +41,19 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
    public string $color = 'blue';
 
 
-
-
-
-   /**
-    * Getting the days of the week
-    */
-   public array $weekdays;
-
    /**
     * Get the selected date
     */
    #[Modelable]
-    public $selectedDate;
+   public $selectedDate;
+
+   
+   // public string $selectedMonth;
+
+   // public int $selectedYear;
+
+ 
+
 
 
     public  $today;
@@ -59,33 +61,76 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 
     public $year;
     public $month;
-    public $day;
 
-    public function mount()
+
+
+
+      
+    /**
+     * Getting the days of the week
+     *
+     * @return array
+     */
+    #[Computed()]  
+    public function weekdays() :array
     {
-        $this->today=JalaliDatePicker::today();
-        $this->weekdays = JalaliDatePicker::weekdays($this->abbreviatingWeekdays);
+      return JalaliDatePicker::weekdays($this->abbreviatingWeekdays);
+    }
+    
+
+     
+    /**
+     * Getting the months of the year
+     *
+     * @return void
+     */
+    #[Computed()] 
+    public function months() :array
+    {
+       return JalaliDatePicker::months();
+    }
+
+   //  #[Computed()] 
+   //  public function years() :array
+   //  {
+   //     return JalaliDatePicker::months();
+   //  }
+
+
+    public function setMonth(int $month)
+    {
+       $this->month = $month;
+    }
+
+     public function setYear(int $year)
+    {
+       $this->year = $year;
     }
 
     public function render()
-    {
-
+    {              
        return $this->view([
-          'grid'=> JalaliDatePicker::setDate($this->year,$this->month,$this->day)
-                                   ->calendarGridLayout()
+          'grid'=> JalaliDatePicker::setDate($this->year,$this->month)
+                                    ->calendarGridLayout()
        ]);
+    }
+
+    public function rendered(){
+       $this->today=JalaliDatePicker::today();
+       $this->month = JalaliDatePicker::month();   
+       $this->year = JalaliDatePicker::year();  
     }
 
 
 };
 ?>
 
-<div class="min-w-80" x-data="jalaliDatePicker" x-cloak>
+<div class=" w-auto mb-80" x-data="jalaliDatePicker" x-cloak>
         {{-- input  --}}
         <div class="relative" x-bind="input">
           <input x-bind="input.input" 
                  class="p-2 border border-stone-300 outline-none caret-transparent w-full z-50">
-             <button class=" absolute inset-y-0 right-0 px-2 cursor-pointer z-90 h-full" x-bind="input.resetDateButton">
+             <button class=" absolute inset-y-0 right-0 px-2 cursor-pointer z-90 h-full" x-bind="input.reset">
              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                </svg>
@@ -93,18 +138,22 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
         </div>
 
          {{-- calendar  --}}
-           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 py-2 px-1 rounded-b-2xl gap-2 select-none  " x-bind="calendar" >
-             <div class="flex flex-col" x-bind="calendar.weekdays">
+           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 pb-4  rounded-b-2xl gap-2 select-none  " x-bind="calendar" >
+             <div class="flex flex-col px-3 gap-2" x-bind="calendar.weekdays">
               
-               <div>1405</div>
+               {{-- year & month  --}}
+               <div class="flex justify-center gap-2 border-b border-blue-100  py-3 text-xl">
+                  <button type="button" class=" cursor-pointer" x-bind="calendar.dateNavigationPanel.monthPicker"></button>
+                  <button type="button" class=" cursor-pointer">1405</button>
+               </div>
 
                 {{-- weekdays --}}
                  <div @class([
                         "grid grid-cols-7 py-2 gap-1 font-semibold", 
                         'text-sm' => $abbreviatingWeekdays,
-                        'text-[0.68rem]' => !$abbreviatingWeekdays
+                        'text-xs' => !$abbreviatingWeekdays
                      ]) >
-                    @foreach ($weekdays as $weekday)
+                    @foreach ($this->weekdays as $weekday)
                          <span
                               wire:key="weekday-{{ $loop->iteration }}">
                               {{ $weekday }}
@@ -114,7 +163,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
             </div>  
 
              {{-- calender layout  --}}
-              <div class="grid grid-cols-7 gap-1 text-sm">
+              <div class="grid grid-cols-7 gap-1 text-sm px-3">
 
             {{-- Days of the previous month --}}
                @foreach ($grid->last_month as $day)
@@ -136,6 +185,51 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                           wire:key="{{ $day }}"
                           value="{{ $day }}"></button>
                @endforeach
+           </div>
+
+             {{-- year-month picker box  --}}
+            <div class=" absolute h-full w-full inset-y-0 right-0 flex flex-col gap-4 p-3 rounded-b-2xl text-sm font-semibold  bg-blue-700 text-blue-100" x-bind="calendar.dateNavigationPanel">
+              
+                {{-- header  --}}
+                <div class="flex justify-between border-b py-2 border-blue-100">
+                  <div class=" flex items-baseline gap-2">
+                     <h4 class="text-xl" x-bind="calendar.dateNavigationPanel.title"></h4>
+
+                     <span wire:loading wire:target="setMonth,setYear"  class=" size-4 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600"></span>
+
+                  </div>
+                   <button class=" self-end cursor-pointer border border-blue-100 rounded-md p-1" x-bind="calendar.dateNavigationPanel.close" >
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                   </button>
+                </div>
+
+               {{-- month picker  --}}
+                  <template x-if="showMonthPicker">
+                       <div class="grid grid-cols-3 gap-2 w-full h-full overflow-y-auto scroll-smooth px-3 items-stretch" >
+                           @foreach ($this->months as $key => $month)
+                              <button 
+                                    x-bind="calendar.dateNavigationPanel.button"
+                                    wire:key="month-{{ $key }}"
+                                    wire:click="setMonth('{{ $key }}')"
+                                    value="{{  $month }}"></button>
+                           @endforeach
+                       </div>
+                  </template>
+
+                  {{-- month picker  --}}
+                  <template x-if="showYearPicker">
+                       <div class="grid grid-cols-4 gap-3 w-full h-full overflow-y-auto scroll-smooth px-3 items-stretch" >
+                           @foreach ($this->months as  $year)
+                              <button 
+                                    x-bind="calendar.dateNavigationPanel.button"
+                                    wire:key="year-{{ $year }}"
+                                    wire:click="setYear('{{ $year }}')"
+                                    value="{{  $year }}"></button>
+                           @endforeach
+                       </div>
+                  </template>               
            </div>
       </div>
 </div>
