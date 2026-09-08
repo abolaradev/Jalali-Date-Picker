@@ -1,6 +1,8 @@
 <?php
 
 use Abolaradev\JalaliDatePicker\Facades\JalaliDatePicker;
+use Abolaradev\JalaliDatePicker\Traits\WithJalaliDatePicker;
+use Illuminate\Support\Benchmark;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Modelable;
@@ -10,36 +12,8 @@ use Morilog\Jalali\Jalalian;
 
 new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 {
-   /**
-   * Determines whether the calendar should close after selecting a date.
-   */
-   public bool $autoClose=true;
 
-   /**
-    * Specifies that the calendar closes when clicking outside its area.
-    */
-   public bool $outsideClose = true ; 
-
-   /**
-    * Specifies whether the days of the week are displayed in full or abbreviated form.
-    */
-   public bool $abbreviatingWeekdays = true;
-
-   /**
-    * Display calendar day numbers in Persian.
-    */
-   public bool $withPersianDigits = false;
-
-   /**
-    * Display the button to reset the selected date.
-    */
-   public bool $showResetDateButton = true;
-
-   /**
-    * Set calendar color
-    */
-   public string $color = 'blue';
-
+   use WithJalaliDatePicker;
 
    /**
     * Get the selected date
@@ -47,23 +21,11 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
    #[Modelable]
    public $selectedDate;
 
-   
-   // public string $selectedMonth;
-
-   // public int $selectedYear;
-
- 
-
-
-
-    public  $today;
+   public  $today;
 
 
     public $year;
     public $month;
-
-
-
 
       
     /**
@@ -77,8 +39,6 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
       return JalaliDatePicker::weekdays($this->abbreviatingWeekdays);
     }
     
-
-     
     /**
      * Getting the months of the year
      *
@@ -90,11 +50,11 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
        return JalaliDatePicker::months();
     }
 
-   //  #[Computed()] 
-   //  public function years() :array
-   //  {
-   //     return JalaliDatePicker::months();
-   //  }
+   #[Computed()] 
+    public function years() :array
+    {
+       return JalaliDatePicker::years();
+    }
 
 
     public function setMonth(int $month)
@@ -107,17 +67,20 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
        $this->year = $year;
     }
 
+  
+
     public function render()
-    {              
+    {    
        return $this->view([
           'grid'=> JalaliDatePicker::setDate($this->year,$this->month)
+                                    ->dateRange($this->minDate,$this->maxDate)
                                     ->calendarGridLayout()
        ]);
     }
 
     public function rendered(){
        $this->today=JalaliDatePicker::today();
-       $this->month = JalaliDatePicker::month();   
+      //  $this->month = JalaliDatePicker::month();   
        $this->year = JalaliDatePicker::year();  
     }
 
@@ -144,7 +107,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                {{-- year & month  --}}
                <div class="flex justify-center gap-2 border-b border-blue-100  py-3 text-xl">
                   <button type="button" class=" cursor-pointer" x-bind="calendar.dateNavigationPanel.monthPicker"></button>
-                  <button type="button" class=" cursor-pointer">1405</button>
+                  <button type="button" class=" cursor-pointer" x-bind="calendar.dateNavigationPanel.yearPicker"></button>
                </div>
 
                 {{-- weekdays --}}
@@ -166,21 +129,21 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
               <div class="grid grid-cols-7 gap-1 text-sm px-3">
 
             {{-- Days of the previous month --}}
-               @foreach ($grid->last_month as $day)
+               @foreach ($grid->get('previousMonthDays') as $day)
                   <button x-bind="calendar.unselectableDays"
                           wire:key="{{ $day }}"
                           value="{{ $day }}"></button>
                @endforeach
 
                {{-- The days of this month --}}
-                @foreach ($grid->current_month as $day)
+                @foreach ($grid->get('daysInMonth') as $day)
                     <button x-bind="calendar.selectableDays"
                             wire:key="{{ $day }}"
                             value="{{ $day }}"></button>
                @endforeach
 
               {{-- Days of the next month --}}
-               @foreach ($grid->next_month as $day)
+               @foreach ($grid->get('nextMonthDays') as $day)
                   <button x-bind="calendar.unselectableDays"
                           wire:key="{{ $day }}"
                           value="{{ $day }}"></button>
@@ -218,10 +181,10 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                        </div>
                   </template>
 
-                  {{-- month picker  --}}
+                  {{-- year picker  --}}
                   <template x-if="showYearPicker">
                        <div class="grid grid-cols-4 gap-3 w-full h-full overflow-y-auto scroll-smooth px-3 items-stretch" >
-                           @foreach ($this->months as  $year)
+                           @foreach ($this->years as  $year)
                               <button 
                                     x-bind="calendar.dateNavigationPanel.button"
                                     wire:key="year-{{ $year }}"
