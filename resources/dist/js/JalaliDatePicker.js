@@ -108,7 +108,7 @@ Alpine.data('jalaliDatePicker',()=>({
         },
 
         ['x-on:click.outside'](){
-            if(this.$wire.outsideClose){
+            if(this.$wire.closeOnOutsideClick){
                 this.showCalendar = false
                 this.showDateNavigationPanel = false
             }
@@ -157,6 +157,10 @@ Alpine.data('jalaliDatePicker',()=>({
                     if(this.showMonthPicker){
                         return 'انتخاب ماه'
                     }
+
+                     if(this.showYearPicker){
+                        return 'انتخاب سال'
+                    }
                 }
             },
 
@@ -164,6 +168,8 @@ Alpine.data('jalaliDatePicker',()=>({
                 ['x-on:click'](){
                     this.showDateNavigationPanel = false
                     this.showMonthPicker = false
+                    this.showYearPicker = false
+
                 }
             },
 
@@ -177,13 +183,24 @@ Alpine.data('jalaliDatePicker',()=>({
                 }
             },
 
+            yearPicker :{
+                ['x-text'](){
+                    return this.year
+                },
+                ['x-on:click'](){
+                    this.showDateNavigationPanel = true
+                    this.showYearPicker = true
+                }
+            },
+
             button : {
                 type : 'button',
 
                 [':class'](){
                     let buttonClasses = 'rounded-md min-h-9 cursor-pointer flex justify-center items-center border border-blue-100 '
                     let buttonValue = this.$el.value
-                    if(buttonValue == this.month || buttonValue == this.month){
+
+                    if(buttonValue == this.month || buttonValue == this.year){
                          buttonClasses += 'bg-blue-100 text-blue-700'
                     }
 
