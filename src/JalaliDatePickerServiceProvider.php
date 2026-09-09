@@ -4,7 +4,6 @@ namespace Abolaradev\JalaliDatePicker;
 
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
-use Illuminate\Support\Facades\Blade;
 
 class JalaliDatePickerServiceProvider extends ServiceProvider
 {
@@ -32,9 +31,6 @@ class JalaliDatePickerServiceProvider extends ServiceProvider
             viewPath: __DIR__ . '/../resources/views/livewire',
         );
 
-        // Register the package Blade components namespace
-        Blade::componentNamespace(__DIR__ . '/../resources/views/components','jalali-date-picker');
-
         // Load the package views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'jalali-date-picker');
 
@@ -47,11 +43,6 @@ class JalaliDatePickerServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/jalali-date-picker.php' => config_path('jalali-date-picker.php'),
         ], ['jalali-date-picker', 'jalali-date-picker-config']);
-
-        // Publish the package views
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/jalali-date-picker'),
-        ], ['jalali-date-picker', 'jalali-date-picker-views']);
 
         // Publish the package assets
         $this->publishes([
