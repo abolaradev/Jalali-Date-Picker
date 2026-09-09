@@ -1,0 +1,11 @@
+@font-face {
+    font-family: 'Vazir';
+    src: url('../fonts/Vazir.woff2') format('woff2');
+    font-weight: 800;
+    font-style: normal;
+    font-display: swap;
+}
+
+.date-picker-font {
+    font-family: 'Vazir' !important;
+}

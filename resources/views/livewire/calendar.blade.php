@@ -44,7 +44,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
         </div>
 
          {{-- calendar  --}}
-           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 pb-4  rounded-b-2xl gap-2 select-none  " x-bind="calendar" >
+           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 pb-4  rounded-b-2xl gap-2 select-none date-picker-font " x-bind="calendar" >
              <div class="flex flex-col px-3 gap-2 bg-jalali-700 text-jalali-100">
               
                {{-- year & month  --}}
@@ -158,4 +158,5 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 @assets
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <script defer src="{{ package_asset('js/JalaliDatePicker.js') }}"></script>
+<link rel="stylesheet" href="{{ package_asset('css/JalaliDatePicker.css') }}">
 @endassets
