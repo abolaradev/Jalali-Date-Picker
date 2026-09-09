@@ -12,25 +12,22 @@ Alpine.data('jalaliDatePicker',()=>({
     // Stores the currently selected year.
     year : '',
 
-    // Stores today's Jalali date.
-    today : '',
-
     // Stores colors's calendar.
     color : '',
     
-
-
+    // Navigation panel display status
     showDateNavigationPanel : false,
 
-    showMonthPicker : false,
-
-    showYearPicker : false,
+    // Display status of the year or month selection in the navigation panel.
+    showPicker :{
+        month : false,
+        year : false,
+    },
 
 
     // Initializes the DatePicker state and synchronizes it with Livewire.
     init(){
         this.color = this.$wire.get('color')
-        this.today = this.$wire.get('today')
     },
 
     // Extracts the day number from a Jalali date string.
@@ -39,6 +36,7 @@ Alpine.data('jalaliDatePicker',()=>({
         return parseInt(date.split('/').pop());
     },
 
+    // It converts the English numerals in the calendar to Persian.
     toPersianDigits(value) {
         return value.toString().replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[digit])
     },
@@ -46,6 +44,14 @@ Alpine.data('jalaliDatePicker',()=>({
     // Color coordination of calendar elements
     changeCalendarColor(classes){
         return classes.replace(/color/gi, this.color)
+    },
+
+    // Closes the navigation panel.
+    closeDateNavigationPanel()
+    {
+        this.showDateNavigationPanel = false 
+        this.showPicker.month= false
+        this.showPicker.year = false
     },
 
     input : {
@@ -138,7 +144,7 @@ Alpine.data('jalaliDatePicker',()=>({
             this.year = this.$wire.year
         },
 
-
+        // The Navigation Panel settings are determined.
         dateNavigationPanel :{
 
             ['x-show'](){
@@ -154,11 +160,11 @@ Alpine.data('jalaliDatePicker',()=>({
 
             title:{
                 ['x-text'](){
-                    if(this.showMonthPicker){
+                    if(this.showPicker.month){
                         return 'انتخاب ماه'
                     }
 
-                     if(this.showYearPicker){
+                     if(this.showPicker.year){
                         return 'انتخاب سال'
                     }
                 }
@@ -166,30 +172,25 @@ Alpine.data('jalaliDatePicker',()=>({
 
             close:{
                 ['x-on:click'](){
-                    this.showDateNavigationPanel = false
-                    this.showMonthPicker = false
-                    this.showYearPicker = false
-
+                    this.closeDateNavigationPanel();
                 }
             },
 
-            monthPicker :{
-                ['x-text'](){
-                    return this.month
-                },
+            picker :{
+    
                 ['x-on:click'](){
                     this.showDateNavigationPanel = true
-                    this.showMonthPicker = true
-                }
-            },
+                
+                    let buttonDataPicker = this.$el.dataset.picker
 
-            yearPicker :{
-                ['x-text'](){
-                    return this.year
-                },
-                ['x-on:click'](){
-                    this.showDateNavigationPanel = true
-                    this.showYearPicker = true
+                    if(buttonDataPicker == 'months'){
+                        this.showPicker.month = true
+                    }
+
+                    if(buttonDataPicker == 'years'){
+                        this.showPicker.year=true
+                    }
+
                 }
             },
 
@@ -198,9 +199,8 @@ Alpine.data('jalaliDatePicker',()=>({
 
                 [':class'](){
                     let buttonClasses = 'rounded-md min-h-9 cursor-pointer flex justify-center items-center border border-blue-100 '
-                    let buttonValue = this.$el.value
 
-                    if(buttonValue == this.month || buttonValue == this.year){
+                    if(this.$el.dataset.selected){
                          buttonClasses += 'bg-blue-100 text-blue-700'
                     }
 
@@ -214,8 +214,7 @@ Alpine.data('jalaliDatePicker',()=>({
                 ['x-on:click'](){
                    Livewire.hook('request', ({ succeed }) => {
                         succeed(() => {
-                            this.showDateNavigationPanel = false
-                            this.showMonthPicker = false
+                            this.closeDateNavigationPanel();
                         })
                     })
                 }
@@ -267,17 +266,17 @@ Alpine.data('jalaliDatePicker',()=>({
             // date and the currently selected date.
             [':class'](){ 
 
-            let selectableButtonsClass ='h-9 rounded-md px-3 cursor-pointer '
+                let selectableButtonsClass ='h-9 rounded-md px-3 cursor-pointer '
 
-            if(this.selectedDate == this.$el.value){
-                    selectableButtonsClass += 'bg-color-700 text-color-100 font-semibold duration-300'
-            }else{
-                    selectableButtonsClass += 'bg-color-100 text-color-700 hover:bg-color-200'
-            }
+                if(this.selectedDate == this.$el.value){
+                        selectableButtonsClass += 'bg-color-700 text-color-100 font-semibold duration-300'
+                }else{
+                        selectableButtonsClass += 'bg-color-100 text-color-700 hover:bg-color-200'
+                }
 
-            if (this.today == this.$el.value) {
+                if (this.$el.dataset.istoday) {
                     selectableButtonsClass += ' border border-color-700 '
-            }
+                }
 
                 return this.changeCalendarColor(selectableButtonsClass)
             }
