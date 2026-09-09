@@ -24,7 +24,8 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
    {   
       return $this->view([
          'grid'=> JalaliDatePicker::setDate($this->year,$this->month)
-                                 ->calendarGridLayout()
+                                  ->dateRange($this->minDate,$this->maxDate)
+                                  ->calendarGridLayout()
       ]);
    }
 };
@@ -81,12 +82,17 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 
                {{-- The days of this month --}}
                 @foreach ($grid->get('daysInMonth') as $day)
-                    <button x-bind="calendar.selectableDays"
-
+                    <button 
                            @if ($this->isToday($day))
                            data-istoday="true"
                            @endif
 
+                           @if ($this->isGreaterThanMaxDate($day) || $this->isLessThanMinDate($day))
+                           x-bind="calendar.unselectableDays"
+                           @else
+                           x-bind="calendar.selectableDays"
+                           @endif
+                           
                             wire:key="{{ $day }}"
                             value="{{ $day }}"></button>
                @endforeach

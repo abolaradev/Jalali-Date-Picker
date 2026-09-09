@@ -76,12 +76,36 @@ trait WithJalaliDatePicker {
   /**
   * It is being checked whether the selected date is today.
   *
-  * @param  mixed $date Selected Date
+  * @param  string $date The Jalali date string
   * @return bool
   */
-  public function isToday($date) :bool
+  public function isToday(string $date) :bool
   {
     return JalaliDatePicker::isToday($date);
+  }
+
+
+  /**
+   * Checks whether a specific date is earlier than the minimum specified date.
+   *
+   * @param  string $date The Jalali date string.
+   * @return bool
+   */
+  public function isLessThanMinDate(string $date) :bool
+  {
+    return JalaliDatePicker::isDateWithinMinDate($date);
+  }
+
+
+  /**
+   * Checks whether a specific date is later than the maximum specified date.
+   *
+   * @param  string $date The Jalali date string.
+   * @return bool
+   */
+  public function isGreaterThanMaxDate(string $date) :bool
+  {
+    return JalaliDatePicker::isDateWithinMaxDate($date);
   }
 
   
@@ -117,8 +141,7 @@ trait WithJalaliDatePicker {
   #[Computed()] 
   public function years() :Collection
   {
-      return JalaliDatePicker::dateRange($this->minDate,$this->maxDate)
-                            ->years();
+      return JalaliDatePicker::years();
   }
 
     

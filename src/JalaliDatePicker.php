@@ -151,6 +151,36 @@ class JalaliDatePicker
         return $this;
     }
 
+    
+    /**
+     * Checks whether a specific date is earlier than the minimum specified date.
+     *
+     * @param  string $date The Jalali date string.
+     * @return bool
+     */
+    public function isDateWithinMinDate(string $date) :bool
+    {
+        $toJalalianDate = $this->getJalalianDateFromString($date);
+        $minDate = $this->minDate;
+
+        return $toJalalianDate->lessThan($minDate);
+    }
+
+        
+    /**
+     * Checks whether a specific date is later than the maximum specified date.
+     *
+     * @param  string $date The Jalali date string.
+     * @return bool
+     */
+    public function isDateWithinMaxDate(string $date) :bool
+    {
+        $toJalalianDate = $this->getJalalianDateFromString($date);
+        $maxDate = $this->maxDate;
+
+        return $toJalalianDate->greaterThan($maxDate);
+    }
+
 
      /**
      * Getting the days of the week

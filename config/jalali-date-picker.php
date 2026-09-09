@@ -6,31 +6,41 @@ return [
     // The timezone used for date calculations.
     'timezone' => 'Asia/Tehran',
 
-    // The earliest date that can be selected.
+
+    // The earliest date that can be selected. 
+    // You can also provide a simple Jalali date, such as: 1405/01/01.
     'minDate' => Carbon::now()
                        ->lastOfYear()
                        ->subCentury(),
     
+                
                        
-    // The latest date that can be selected                  
+    // The latest date that can be selected    
+    // You can also provide a simple Jalali date, such as: 1405/12/29.
     'maxDate' => Carbon::now()
                        ->lastOfYear()
                        ->addYear(),
 
+
     // Automatically closes the calendar after selecting a date.
     'autoClose' => true,
+
 
     // Closes the calendar when clicking outside of it.
     'closeOnOutsideClick' => true,
 
+
     // Displays abbreviated names for the weekdays.
     'abbreviatingWeekdays' => true,
+
 
     // Converts English digits to Persian digits in the calendar.
     'withPersianDigits' => false,
 
+
     // Displays a button for clearing the selected date.
     'showResetDateButton' => true,
+
 
     // The primary Tailwind CSS color used by the DatePicker.
     // Supported values can be Tailwind color names such as:
