@@ -2,17 +2,12 @@
 
 use Abolaradev\JalaliDatePicker\Facades\JalaliDatePicker;
 use Abolaradev\JalaliDatePicker\Traits\WithJalaliDatePicker;
-use Illuminate\Support\Benchmark;
-use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Modelable;
-use Livewire\Attributes\Reactive;
 use Livewire\Component;
-use Morilog\Jalali\Jalalian;
 
 new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 {
-
    use WithJalaliDatePicker;
 
    /**
@@ -21,70 +16,17 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
    #[Modelable]
    public $selectedDate;
 
-   public  $today;
+   public $month;
 
+   public $year;
 
-    public $year;
-    public $month;
-
-      
-    /**
-     * Getting the days of the week
-     *
-     * @return array
-     */
-    #[Computed()]  
-    public function weekdays() :array
-    {
-      return JalaliDatePicker::weekdays($this->abbreviatingWeekdays);
-    }
-    
-    /**
-     * Getting the months of the year
-     *
-     * @return void
-     */
-    #[Computed()] 
-    public function months() :array
-    {
-       return JalaliDatePicker::months();
-    }
-
-   #[Computed()] 
-    public function years() :array
-    {
-       return JalaliDatePicker::years();
-    }
-
-
-    public function setMonth(int $month)
-    {
-       $this->month = $month;
-    }
-
-     public function setYear(int $year)
-    {
-       $this->year = $year;
-    }
-
-  
-
-    public function render()
-    {    
-       return $this->view([
-          'grid'=> JalaliDatePicker::setDate($this->year,$this->month)
-                                    ->dateRange($this->minDate,$this->maxDate)
-                                    ->calendarGridLayout()
-       ]);
-    }
-
-    public function rendered(){
-       $this->today=JalaliDatePicker::today();
-      //  $this->month = JalaliDatePicker::month();   
-       $this->year = JalaliDatePicker::year();  
-    }
-
-
+   public function render()
+   {   
+      return $this->view([
+         'grid'=> JalaliDatePicker::setDate($this->year,$this->month)
+                                 ->calendarGridLayout()
+      ]);
+   }
 };
 ?>
 
@@ -105,9 +47,9 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
              <div class="flex flex-col px-3 gap-2" x-bind="calendar.weekdays">
               
                {{-- year & month  --}}
-               <div class="flex justify-center gap-2 border-b border-blue-100  py-3 text-xl">
-                  <button type="button" class=" cursor-pointer" x-bind="calendar.dateNavigationPanel.monthPicker"></button>
-                  <button type="button" class=" cursor-pointer" x-bind="calendar.dateNavigationPanel.yearPicker"></button>
+               <div class="flex justify-center gap-2 border-b border-blue-100  py-3 text-xl"  >
+                  <button type="button" class=" cursor-pointer" data-picker="months" x-bind="calendar.dateNavigationPanel.picker">{{ $this->getMonth }}</button>
+                  <button type="button" class=" cursor-pointer" data-picker="years" x-bind="calendar.dateNavigationPanel.picker">{{ $this->getYear}}</button>
                </div>
 
                 {{-- weekdays --}}
@@ -125,6 +67,8 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                 </div>
             </div>  
 
+            
+
              {{-- calender layout  --}}
               <div class="grid grid-cols-7 gap-1 text-sm px-3">
 
@@ -138,6 +82,11 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                {{-- The days of this month --}}
                 @foreach ($grid->get('daysInMonth') as $day)
                     <button x-bind="calendar.selectableDays"
+
+                           @if ($this->isToday($day))
+                           data-istoday="true"
+                           @endif
+
                             wire:key="{{ $day }}"
                             value="{{ $day }}"></button>
                @endforeach
@@ -158,7 +107,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                   <div class=" flex items-baseline gap-2">
                      <h4 class="text-xl" x-bind="calendar.dateNavigationPanel.title"></h4>
 
-                     <span wire:loading wire:target="setMonth,setYear"  class=" size-4 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600"></span>
+                     <span wire:loading wire:target="month,year"  class=" size-4 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600"></span>
 
                   </div>
                    <button class=" self-end cursor-pointer border border-blue-100 rounded-md p-1" x-bind="calendar.dateNavigationPanel.close" >
@@ -169,30 +118,33 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
                 </div>
 
                {{-- month picker  --}}
-                  <template x-if="showMonthPicker">
-                       <div class="grid grid-cols-3 gap-2 w-full h-full overflow-y-auto scroll-smooth px-3 items-stretch" >
-                           @foreach ($this->months as $key => $month)
-                              <button 
-                                    x-bind="calendar.dateNavigationPanel.button"
-                                    wire:key="month-{{ $key }}"
-                                    wire:click="setMonth('{{ $key }}')"
-                                    value="{{  $month }}"></button>
-                           @endforeach
-                       </div>
-                  </template>
+                     <div class="grid grid-cols-3 gap-2 w-full h-full overflow-y-auto scroll-smooth px-3 items-stretch" x-show="showPicker.month" >
+                        @foreach ($this->months as $key => $month)
+                           <button 
+                                 x-bind="calendar.dateNavigationPanel.button"
+                                 wire:key="month-{{ $key }}"
+                                 @if ($this->getMonth == $month)
+                                 data-selected="true"
+                                 @endif
+                                 wire:click="$set('month','{{ $key }}')"
+                                 value="{{  $month }}"></button>
+                        @endforeach
+                     </div>
+   
 
                   {{-- year picker  --}}
-                  <template x-if="showYearPicker">
-                       <div class="grid grid-cols-4 gap-3 w-full h-full overflow-y-auto scroll-smooth px-3 items-stretch" >
-                           @foreach ($this->years as  $year)
-                              <button 
-                                    x-bind="calendar.dateNavigationPanel.button"
-                                    wire:key="year-{{ $year }}"
-                                    wire:click="setYear('{{ $year }}')"
-                                    value="{{  $year }}"></button>
-                           @endforeach
-                       </div>
-                  </template>               
+                <div class="grid grid-cols-4 gap-3 w-full h-full overflow-y-auto scroll-smooth px-3 items-stretch" x-show="showPicker.year" >
+                     @foreach ($this->years as  $year)
+                        <button 
+                              x-bind="calendar.dateNavigationPanel.button"
+                              @if ($this->getYear == $year)
+                              data-selected="true"
+                              @endif
+                              wire:key="year-{{ $year }}"
+                              wire:click="$set('year','{{ $year }}')"
+                              value="{{  $year }}"></button>
+                     @endforeach
+                  </div>            
            </div>
       </div>
 </div>
