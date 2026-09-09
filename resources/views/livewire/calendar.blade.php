@@ -45,10 +45,10 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
 
          {{-- calendar  --}}
            <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 pb-4  rounded-b-2xl gap-2 select-none  " x-bind="calendar" >
-             <div class="flex flex-col px-3 gap-2" x-bind="calendar.weekdays">
+             <div class="flex flex-col px-3 gap-2 bg-jalali-700 text-jalali-100">
               
                {{-- year & month  --}}
-               <div class="flex justify-center gap-2 border-b border-blue-100  py-3 text-xl"  >
+               <div class="flex justify-center gap-2 border-b border-jalali-100  py-3 text-xl"  >
                   <button type="button" class=" cursor-pointer" data-picker="months" x-bind="calendar.dateNavigationPanel.picker">{{ $this->getMonth }}</button>
                   <button type="button" class=" cursor-pointer" data-picker="years" x-bind="calendar.dateNavigationPanel.picker">{{ $this->getYear}}</button>
                </div>
@@ -106,17 +106,17 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
            </div>
 
              {{-- year-month picker box  --}}
-            <div class=" absolute h-full w-full inset-y-0 right-0 flex flex-col gap-4 p-3 rounded-b-2xl text-sm font-semibold  bg-blue-700 text-blue-100" x-bind="calendar.dateNavigationPanel">
+            <div class=" absolute h-full w-full inset-y-0 right-0 flex flex-col gap-4 p-3 rounded-b-2xl text-sm font-semibold  bg-jalali-700 text-jalali-100" x-bind="calendar.dateNavigationPanel">
               
                 {{-- header  --}}
-                <div class="flex justify-between border-b py-2 border-blue-100">
+                <div class="flex justify-between border-b py-2 border-jalali-100">
                   <div class=" flex items-baseline gap-2">
                      <h4 class="text-xl" x-bind="calendar.dateNavigationPanel.title"></h4>
 
-                     <span wire:loading wire:target="month,year"  class=" size-4 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600"></span>
+                     <span wire:loading wire:target="month,year"  class=" size-4 animate-spin rounded-full border-2 border-jalali-200 border-t-jalali-600"></span>
 
                   </div>
-                   <button class=" self-end cursor-pointer border border-blue-100 rounded-md p-1" x-bind="calendar.dateNavigationPanel.close" >
+                   <button class=" self-end cursor-pointer border border-jalali-100 rounded-md p-1" x-bind="calendar.dateNavigationPanel.close" >
                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>

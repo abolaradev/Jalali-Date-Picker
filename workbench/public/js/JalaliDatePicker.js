@@ -25,9 +25,18 @@ Alpine.data('jalaliDatePicker',()=>({
     },
 
 
-    // Initializes the DatePicker state and synchronizes it with Livewire.
+    // Initializes the DatePicker, applies the configured calendar color,
+    // and reapplies the color after each Livewire DOM update.
     init(){
         this.color = this.$wire.get('color')
+
+        this.$nextTick(()=>{
+            this.setCalendarColor()
+
+            Livewire.hook('morphed',({el})=>{
+                this.setCalendarColor()
+            })
+        })
     },
 
     // Extracts the day number from a Jalali date string.
@@ -42,8 +51,8 @@ Alpine.data('jalaliDatePicker',()=>({
     },
 
     // Color coordination of calendar elements
-    changeCalendarColor(classes){
-        return classes.replace(/color/gi, this.color)
+    replaceCalendarColor(classes){
+        return classes.replace(/jalali/gi, this.color)
     },
 
     // Closes the navigation panel.
@@ -52,6 +61,21 @@ Alpine.data('jalaliDatePicker',()=>({
         this.showDateNavigationPanel = false 
         this.showPicker.month= false
         this.showPicker.year = false
+    },
+
+    // Configuring the calendar color based on the assigned value and replacing the default placeholder 
+    // with the specific color in the classes. 
+    setCalendarColor() {
+        this.$el.querySelectorAll('[class]').forEach(element => {
+            const classes = element.getAttribute('class')
+
+            if (classes) {
+                element.setAttribute(
+                    'class',
+                    classes.replaceAll(/jalali/gi, this.color)
+                )
+            }
+        })
     },
 
     input : {
@@ -198,10 +222,10 @@ Alpine.data('jalaliDatePicker',()=>({
                 type : 'button',
 
                 [':class'](){
-                    let buttonClasses = 'rounded-md min-h-9 cursor-pointer flex justify-center items-center border border-blue-100 '
+                    let buttonClasses = 'rounded-md min-h-9 cursor-pointer flex justify-center items-center border border-jalali-100 '
 
                     if(this.$el.dataset.selected){
-                         buttonClasses += 'bg-blue-100 text-blue-700'
+                         buttonClasses += 'bg-jalali-100 text-jalali-700'
                     }
 
                     return buttonClasses
@@ -222,22 +246,14 @@ Alpine.data('jalaliDatePicker',()=>({
         },
 
 
-        weekdays: {
-        [':class'](){
-            let headerClass = "bg-color-700 text-color-100"
-            return this.changeCalendarColor(headerClass)
-            }
-        },
-
-
         // Defines the bindings for days that cannot be selected.
         unselectableDays:{
             type : 'button',
             disabled : true,
 
             [':class'](){
-                let unselectableButtonsClass = 'h-9 rounded-md px-3 bg-color-100 opacity-50 text-color-700'
-                return this.changeCalendarColor(unselectableButtonsClass)
+                let unselectableButtonsClass = 'h-9 rounded-md px-3 bg-jalali-100 opacity-50 text-jalali-700'
+                return this.replaceCalendarColor(unselectableButtonsClass)
             },
 
             ['x-text'](){
@@ -269,16 +285,17 @@ Alpine.data('jalaliDatePicker',()=>({
                 let selectableButtonsClass ='h-9 rounded-md px-3 cursor-pointer '
 
                 if(this.selectedDate == this.$el.value){
-                        selectableButtonsClass += 'bg-color-700 text-color-100 font-semibold duration-300'
+                        selectableButtonsClass += 'bg-jalali-700 text-jalali-100 font-semibold duration-300'
                 }else{
-                        selectableButtonsClass += 'bg-color-100 text-color-700 hover:bg-color-200'
+                        selectableButtonsClass += 'bg-jalali-100 text-jalali-700 hover:bg-jalali-200'
                 }
 
                 if (this.$el.dataset.istoday) {
-                    selectableButtonsClass += ' border border-color-700 '
+                    selectableButtonsClass += ' border border-jalali-700 '
                 }
 
-                return this.changeCalendarColor(selectableButtonsClass)
+                 return this.replaceCalendarColor(selectableButtonsClass)
+
             }
         }
     }
