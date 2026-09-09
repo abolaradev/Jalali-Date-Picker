@@ -3,19 +3,31 @@
 namespace Abolaradev\JalaliDatePicker;
 
 use DateTimeZone;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Morilog\Jalali\Jalalian;
 
 class JalaliDatePicker 
 {   
+    /**
+     * The currently selected Jalali date.
+     */
     private $date;
 
+    /**
+     * The timezone used for date calculations.
+     */
     private $timezone;
 
+    /**
+     * The earliest date that can be selected.
+     */
     private $minDate;
 
+    /**
+     * The latest date that can be selected.
+     */
     private $maxDate;
 
 
@@ -26,6 +38,7 @@ class JalaliDatePicker
         $this->timezone = new DateTimeZone($defaultTimezone);
     }
         
+
     /**
      * It returns the current Jalali date.
      *
@@ -35,6 +48,7 @@ class JalaliDatePicker
     {
         return Jalalian::now($this->timezone);
     }
+
 
     /**
      * Setting the Jalali date
@@ -59,13 +73,20 @@ class JalaliDatePicker
         
         return $this;
     }   
+    
 
-    public function getDate()
+    /**
+     * Get the selected date.
+     *
+     * @return Jalalian
+     */
+    public function getDate() :Jalalian
     {
         return $this->date;
     }
     
-       /**
+
+    /**
      * Create a new Jalalian instance from the given date components.
      *
      * @param  int $year The Jalali year.
@@ -123,103 +144,121 @@ class JalaliDatePicker
     public function dateRange( Carbon | string $minDate, Carbon | string $maxDate) :self
     {
         $this->minDate = $minDate instanceof Carbon ? Jalalian::forge($minDate)
-                                              : $this->getJalalianDateFromString($minDate);
+                                                    : $this->getJalalianDateFromString($minDate);
         
         $this->maxDate = $maxDate instanceof Carbon ? Jalalian::forge($maxDate)
-                                              : $this->getJalalianDateFromString($maxDate);
+                                                    : $this->getJalalianDateFromString($maxDate);
         return $this;
+    }
+
+
+     /**
+     * Getting the days of the week
+     *
+     * @param  bool $abbreviating Specifies that the days of the week be displayed in abbreviated form.
+     * @return Collection
+     */
+    public function weekdays(bool $abbreviating) :Collection
+    {
+        $jalalian =$this->now()->getFirstDayOfWeek();
+
+        $weekdays=collect(range(1,7))->map(function($value) use($jalalian,$abbreviating){
+
+            $format = $abbreviating ? '%a' 
+                                    : '%A';
+            
+            return $jalalian->addDays($value)
+                            ->format($format);
+        });
+
+        $weekdays->prepend($weekdays->pop());
+
+        return $weekdays;
     }
 
 
     /**
      * Retrieving the names of the Jalali calendar months
      *
-     * @return array
+     * @return Collection
      */
-    public function months() :array
+    public function months() :Collection
     {
         $jalalian=$this->now()->getFirstDayOfYear();
-        $months=[];
+     
+        $months = collect(range(1, 12))->mapWithKeys(function ($value,$key) use ($jalalian) {
 
-        for ($i=0; $i < 12; $i++) { 
-            $months[$i+1] = ($i == 0) ? $jalalian
-                                        : $jalalian->addMonths($i);
-        }
-        
-         $months=Arr::map($months,function($month){
-            return $month->format('%B');
+            $month = ($key == 0) ? $jalalian
+                                 : $jalalian->addMonths($key);
+
+            return [
+                $value => $month->format('%B')
+            ];
         });
 
         return $months;
     }
 
-      public function years() :array
+    
+    /**
+     * Retrieving the years between the specified minimum and maximum dates.
+     *
+     * @return Collection
+     */
+    public function years() :Collection
     {
         $minYear=$this->minDate->getYear();
         $maxYear=$this->maxDate->getYear();
         $spanYears=$maxYear - $minYear;
 
-        $years = [];
+        $years = collect(range(0,$spanYears))->map(function($value) use($minYear){
+            return $value + $minYear;
+        })->reverse();
 
-        for ($i=0; $i <= $spanYears ; $i++) { 
-            $years[]= $minYear + $i;
-        }
-
-        return array_reverse($years);
+        return $years;
     }
 
-
-    public function month()
-    {
-        $months=$this->months();
-        return $months[$this->getDate()->getMonth()];
-    }
-    
-    public function year() :int
-    {
-        return $this->getDate()->getYear();
-    }
     
     /**
-     * Getting the days of the week
-     *
-     * @param  bool $abbreviating
-     * @return void
-     */
-    public function weekdays(bool $abbreviating) :array
-    {
-        $jalalian =$this->now()->getFirstDayOfWeek();
-        $weekdays=[];
-
-        for ($i=0; $i < 7; $i++) { 
-            $weekdays[] = ($i == 0) ? $jalalian
-                                    : $jalalian->subDays($i);
-        }
-        $format = $abbreviating ? '%a' 
-                                : '%A';
-        $weekdays=array_reverse(Arr::map($weekdays,function($day) use($format){
-            return $day->format($format);
-        }));
-
-        array_unshift($weekdays,array_pop($weekdays));
-
-        return $weekdays;
-    }
-    
-    /**
-     * It returns today's Jalali date as a simple string, based on the specified format.
+     * Get the name of the month for the selected date
      *
      * @return string
      */
-    public function today() :string
+    public function getMonth() 
     {
-        return $this->now()
-                    ->format('Y/m/d');
+        return $this->months()
+                    ->get(
+                        $this->getDate()->getMonth()
+                    );
+     
+    }
+        
+    
+    /**
+     * Extracting the year from the selected date
+     *
+     * @return int
+     */
+    public function getYear() :int
+    {
+        return $this->getDate()
+                    ->getYear();
     }
     
-
     
-
+    /**
+     * It is checked whether the selected date is today or not.
+     *
+     * @param  string $date Selected date
+     * @return bool
+     */
+    public function isToday(string $date) :bool
+    {
+        return $this->getJalalianDateFromString($date)
+                    ->isToday();
+                   
+    }
+    
 
     /**
      * Get the days from the previous month that are displayed
@@ -250,6 +289,7 @@ class JalaliDatePicker
         return $days;
     }
 
+
     /**
      * Get all days of the current month.
      *
@@ -273,6 +313,7 @@ class JalaliDatePicker
 
         return $days;
     }
+
 
     /**
      * Get the days from the next month that are displayed
@@ -311,6 +352,7 @@ class JalaliDatePicker
         return $days;
     }
 
+
     /**
      * Build the complete calendar grid layout.
      *
@@ -330,5 +372,4 @@ class JalaliDatePicker
 
         return $grid;
     }
-
 }
