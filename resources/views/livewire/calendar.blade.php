@@ -46,7 +46,7 @@ new #[Layout('jalali-date-picker::layouts.app')] class extends Component
         </div>
 
          {{-- calendar  --}}
-           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 pb-4  rounded-b-2xl gap-2 select-none date-picker-font w-full sm:w-10/12 min-w-85" x-bind="calendar" >
+           <div class="flex flex-col justify-between  text-center bg-neutral-50 border-stone-300 pb-4  rounded-b-2xl gap-2 select-none date-picker-font w-full sm:w-10/12 min-w-85 shadow-sm" x-bind="calendar" >
              <div class="flex flex-col px-3 gap-2 bg-jalali-700 text-jalali-100 ">
               
                {{-- year & month  --}}
